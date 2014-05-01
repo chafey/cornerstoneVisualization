@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+
+
+</style>
+<body>
+<script src="d3.js"></script>
+<script src="jquery-2.1.0.min.js"></script>
+<script>
+
+
+    function update() {
+        $.getJSON('/status', function(resp) {
+
+            var data = [];
+            resp.render_history.forEach(function(d) {
+                data.push(d.count);
+            })
+
+            console.log(data);
+
+        });
+
+        setTimeout(update, 1000);
+    }
+
+    update();
+
+
+
+</script>

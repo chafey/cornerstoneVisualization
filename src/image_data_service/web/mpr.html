@@ -1,0 +1,375 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="jquery-2.1.0.min.js"></script>
+    <script src="three.min.js"></script>
+
+    <!-- twitter bootstrap CSS stylesheet - not required by cornerstoneTools -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>
+            Server Side MPR Rendering
+        </h1>
+
+    </div>
+    <div class="row">
+        <div class="col-xs-2">
+            <ul class="list-group">
+                <a href="#" id="blend_mode_max" class="list-group-item active">MIP</a>
+                <a href="#" id="blend_mode_min" class="list-group-item">MinIP</a>
+                <a href="#" id="blend_mode_mean" class="list-group-item">Mean</a>
+            </ul>
+
+            <hr>
+
+            <ul class="list-group">
+                <a href="#" id="axial" class="list-group-item active">Axial</a>
+                <a href="#" id="sagittal" class="list-group-item">Sagittal</a>
+                <a href="#" id="coronal" class="list-group-item">Coronal</a>
+                <a href="#" id="oblique" class="list-group-item">Oblique</a>
+            </ul>
+
+
+            <span>Slab Thickness</span>
+            <input id="slabThickness" type="text" placeholder="e.g. 100" value="10" size="3">
+            <button id="apply" class="btn">Apply</button>
+
+        </div>
+        <div class="col-xs-6">
+            <img id="vr" width="512" height="512" src="http://50.137.226.14:8080/mpr?volumeId=volume3" draggable="false" oncontextmenu="return false;"/>
+        </div>
+
+    </div>
+</body>
+
+<script>
+
+
+var slabThickness = 10;
+var axes_direction_cosines = [1,0,0, 0,1,0, 0,0,1];
+var reslice_axes_origin = [0,0,0];
+var orientation = 0; // axial
+
+$('#apply').click(function() {
+    slabThickness = parseInt($('#slabThickness').val());
+});
+
+function activate(id)
+{
+    $('a').removeClass('active');
+    $(id).addClass('active');
+}
+
+var blend_mode = 2; // mean
+$('#blend_mode_max').click(function() {
+    activate("#blend_mode_vr");
+    blend_mode = 0;
+    loadAndDisplayImage();
+    return false;
+});
+$('#blend_mode_min').click(function() {
+    activate("#blend_mode_min");
+    blend_mode = 1;
+    loadAndDisplayImage();
+    return false;
+});
+$('#blend_mode_mean').click(function() {
+    activate("#blend_mode_mean");
+    blend_mode = 2;
+    loadAndDisplayImage();
+    return false;
+});
+
+$('#axial').click(function() {
+    activate("#axial");
+    orientation = 0;
+    axes_direction_cosines = [1,0,0, 0,1,0, 0,0,1];
+    reslice_axes_origin = [0,0,0];
+    loadAndDisplayImage();
+    return false;
+});
+
+$('#sagittal').click(function() {
+    activate("#sagittal");
+    orientation = 1;
+    axes_direction_cosines = [0,-1,0, 0,0,-1, -1,0,0];
+    reslice_axes_origin = [0,0,0];
+    loadAndDisplayImage();
+    return false;
+});
+
+$('#coronal').click(function() {
+    activate("#coronal");
+    orientation = 2;
+    axes_direction_cosines = [1,0,0, 0,0,-1, 0,-1,0];
+    reslice_axes_origin = [0,0,0];
+    loadAndDisplayImage();
+    return false;
+});
+$('#oblique').click(function() {
+    activate("#oblique");
+    orientation = 3;
+    axes_direction_cosines = [1,0,0, 0,0,-1, 0,-1,0];
+    reslice_axes_origin = [0,0,0];
+    loadAndDisplayImage();
+    return false;
+});
+
+
+
+var volumeId = 'volume3';
+
+matrix = new THREE.Matrix4();
+rotationMatrix = new THREE.Matrix4();
+scaleMatrix = new THREE.Matrix4();
+translationMatrix = new THREE.Matrix4();
+var window_width = 400;
+var window_level = 40;
+quaternion = new THREE.Quaternion();
+quaternion.setFromRotationMatrix(matrix);
+
+clamp_y		= { min: -0.5, max: 1.3 }; // $min reveals south-pole
+clamp_y_obj 	= { x: 0, y: 0.8 };
+
+var loading = false; // true if image is being loaded, false if not
+var interactive = false; // true if the user is currently rotating (mouse down)
+var stale = false; // true if matrix has been updated while image is being loaded
+
+var lastUpdate = new Date(); // last update date/time
+
+function arrayToString(ar) {
+    var str = "";
+    for(var i=0; i < ar.length; i++) {
+        str += ar[i] + ",";
+    }
+    str = str.substr(0, str.length - 1);
+    return str;
+}
+
+function getUrl()
+{
+    //matrix.multiplyMatrices(scaleMatrix, rotationMatrix);
+    //matrix.multiply(translationMatrix);
+
+    var adc = arrayToString(axes_direction_cosines);
+    var reo = arrayToString(reslice_axes_origin);
+
+    //var url = "http://50.137.226.14:8080/volumeRenderer?volumeId=" + volumeId + "&matrix=" + matrixStr + "&blend_mode=" + blend_mode;
+    var url = "http://50.137.226.14:8080/mpr?volumeId=" + volumeId
+            + "&axes_direction_cosines=" + adc
+            + "&reslice_axes_origin=" + reo
+            + "&blend_mode=" + blend_mode
+            + "&slab_thickness=" + slabThickness
+            + "&window_width=" + window_width
+            + "&window_level=" + window_level;
+
+    if (interactive === true) {
+        url += "&viewport_height=512&viewport_width=512&image_type=1&interpolation_type=0";
+    }
+    else {
+        url += "&viewport_height=512&viewport_width=512&image_type=0&interpolation_type=1";
+    }
+
+    return url;
+}
+
+function loadAndDisplayImage() {
+    var url = getUrl();
+    loading = true;
+    stale = false;
+    $("#vr").attr('src', url);
+}
+
+$("#vr").on('load', function() {
+    loading = false;
+
+    if(stale === true)
+    {
+        loadAndDisplayImage();
+    }
+});
+
+
+$('#vr').on('mousedown', function(mde) {
+
+    interactive = true;
+
+    var mouseButton = mde.which;
+
+    deltaMousePos = { x:0, y:0};
+    prevMousePos = {x:mde.pageX, y:mde.pageY};
+
+    kSensitivity = 0.02;    	// drag sensitivity
+    kFriction = 0.03;       	// throw friction
+    dSensitivityFactor = 0.2;	// decrease to lower kSensitivity
+
+
+    function updateRotationMatrix(){
+        var UP 		 = {x:0, y:1, z:0};
+        var RIGHT    = {x:1, y:0, z:0};
+
+        var xRotation = new THREE.Quaternion();
+        var yRotation = new THREE.Quaternion();
+
+        deltaMousePos.x *= 1 - kFriction;
+        deltaMousePos.y *= 1 - kFriction;
+
+
+        xRotation.setFromAxisAngle(UP, deltaMousePos.x * (kSensitivity * dSensitivityFactor) );
+        yRotation.setFromAxisAngle(RIGHT, deltaMousePos.y * (kSensitivity * dSensitivityFactor) );
+
+        var rotation = new THREE.Quaternion();
+        rotation.multiplyQuaternions(xRotation, yRotation); //r56
+        quaternion.multiplyQuaternions( rotation, quaternion);
+
+        rotationMatrix.makeRotationFromQuaternion(quaternion);
+    }
+
+    function onMouseMove(mme) {
+
+        deltaMousePos.x = mme.pageX - prevMousePos.x;
+        deltaMousePos.y = mme.pageY - prevMousePos.y;
+        prevMousePos = {x: mme.pageX, y:mme.pageY};
+
+        if(mouseButton === 1) { // left mouse button = scroll
+            updateRotationMatrix();
+
+            if(orientation === 3) {
+                matrix.multiplyMatrices(scaleMatrix, rotationMatrix);
+                matrix.multiply(translationMatrix);
+
+                axes_direction_cosines[0] = matrix.elements[0];
+                axes_direction_cosines[1] = matrix.elements[1];
+                axes_direction_cosines[2] = matrix.elements[2];
+                axes_direction_cosines[3] = matrix.elements[4];
+                axes_direction_cosines[4] = matrix.elements[5];
+                axes_direction_cosines[5] = matrix.elements[6];
+                axes_direction_cosines[6] = matrix.elements[8];
+                axes_direction_cosines[7] = matrix.elements[9];
+                axes_direction_cosines[8] = matrix.elements[10];
+            }
+            else {
+
+                if(deltaMousePos.y === 0) {
+                    return;
+                }
+
+                var offset = 0;
+                if(deltaMousePos.y < 0) {
+                    offset = slabThickness;
+                } else if(deltaMousePos.y > 0) {
+                    offset = -slabThickness;
+                }
+
+                reslice_axes_origin[0] += offset * axes_direction_cosines[6];
+                reslice_axes_origin[1] += offset * axes_direction_cosines[7];
+                reslice_axes_origin[2] += offset * axes_direction_cosines[8];
+
+            }
+        }
+        else if(mouseButton ===2) {  // middle mouse button = pan
+            /*var scale = 1.0;
+             if(deltaMousePos.y < 0) {
+             scale = 0.96;
+             } else if(deltaMousePos.y > 0) {
+             scale = 1.04;
+             }
+             sm = new THREE.Matrix4();
+             sm.makeScale(scale, scale, scale);
+             scaleMatrix.multiply(sm);
+             */
+            var sr = new THREE.Matrix4();
+            sr.multiplyMatrices(scaleMatrix, rotationMatrix);
+            sr.getInverse(sr);
+            var v = new THREE.Vector3(deltaMousePos.x, -deltaMousePos.y, 0);
+            var va = v.toArray();
+            sr.applyToVector3Array(va);
+
+            tm = new THREE.Matrix4();
+            tm.makeTranslation(va[0], va[1], va[2]);
+            translationMatrix.multiply(tm);
+        }
+        else if(mouseButton === 3) { // right mouse button = window/level
+            window_level += deltaMousePos.x;
+            window_width += deltaMousePos.y;
+            if(window_width < 1) {
+                window_width = 1;
+            }
+            //console.log('ww/wl=' + window_width + '/' + window_level);
+
+        }
+
+        var url = getUrl();
+
+        if(loading === true) {
+            stale = true;
+        } else {
+            loadAndDisplayImage();
+        }
+    }
+
+    function onMouseUp() {
+
+        interactive = false;
+        var url = getUrl();
+        loadAndDisplayImage();
+
+        $(document).off('mousemove', onMouseMove);
+        $(document).off('mouseup', onMouseUp);
+    }
+
+    $(document).on('mousemove', onMouseMove);
+    $(document).on('mouseup', onMouseUp);
+
+});
+
+$('#vr').on('mousewheel DOMMouseScroll', function(mwe) {
+    interactive = false;
+    event.preventDefault();
+    var delta = event.wheelDelta || -event.detail;
+    var scale = 1.0;
+
+    var axes = 2; // axial
+    if(orientation === 1) {
+        // sag
+        axes = 0;
+    }  else if(orientation ===2 ) {
+        // cor
+        axes = 1;
+    }
+
+
+    var offset = 0;
+    if(delta < 0) {
+        offset = slabThickness;
+    } else if(delta > 0) {
+        offset = -slabThickness;
+    }
+
+    reslice_axes_origin[0] += offset * axes_direction_cosines[6];
+    reslice_axes_origin[1] += offset * axes_direction_cosines[7];
+    reslice_axes_origin[2] += offset * axes_direction_cosines[8];
+
+
+    sm = new THREE.Matrix4();
+    sm.makeScale(scale, scale, scale);
+    scaleMatrix.multiply(sm);
+
+    var url = getUrl();
+
+    if(loading === true) {
+        stale = true;
+    } else {
+        loadAndDisplayImage();
+    }
+
+
+});
+
+
+</script>
+
+</html>

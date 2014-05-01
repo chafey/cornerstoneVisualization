@@ -1,0 +1,287 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="jquery-2.1.0.min.js"></script>
+    <script src="three.min.js"></script>
+
+    <!-- twitter bootstrap CSS stylesheet - not required by cornerstoneTools -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>
+            Server Side Volume Rendering
+        </h1>
+        Rotate: Left Mouse
+        Pan: Middle Mouse
+        W/L: Right Mouse
+        Zoom: Mouse Wheel
+
+    </div>
+    <div class="row">
+        <div class="col-xs-2">
+            <ul class="list-group">
+                <a href="#" id="blend_mode_vr" class="list-group-item active">Volume Rendered</a>
+                <a href="#" id="blend_mode_mip" class="list-group-item">MIP</a>
+            </ul>
+
+            <hr>
+
+            <span>Interactive Frame Rate</span>
+            <input id="frameRate" type="text" placeholder="e.g. 1000" value="15" size="3">
+            <button id="apply" class="btn">Apply</button>
+            <button id="image_hq" class="btn">High Quality Image</button>
+
+        </div>
+        <div class="col-xs-6">
+
+            <img id="vr" width="512" height="512" src="http://50.137.226.14:8080/volumeRenderer?volumeId=volume1" draggable="false" oncontextmenu="return false;"/>
+        </div>
+
+    </div>
+</body>
+
+<script>
+
+    var interactiveFrameRate = 15;
+
+    $('#apply').click(function() {
+        interactiveFrameRate = parseInt($('#frameRate').val());
+    });
+
+    $('#image_hq').click(function() {
+        interactiveFrameRate = parseInt($('#frameRate').val());
+    });
+
+
+    function activate(id)
+    {
+        $('a').removeClass('active');
+        $(id).addClass('active');
+    }
+
+    var blend_mode = 0;
+    $('#blend_mode_vr').click(function() {
+        activate("#blend_mode_vr");
+        blend_mode = 0;
+        loadAndDisplayImage();
+        return false;
+    });
+    $('#blend_mode_mip').click(function() {
+        activate("#blend_mode_mip");
+        blend_mode = 1;
+        loadAndDisplayImage();
+        return false;
+    });
+
+    var volumeId = 'volume1';
+
+    matrix = new THREE.Matrix4();
+    rotationMatrix = new THREE.Matrix4();
+    scaleMatrix = new THREE.Matrix4();
+    translationMatrix = new THREE.Matrix4();
+    var window_width = 270;
+    var window_level = 340;
+
+    quaternion = new THREE.Quaternion();
+    quaternion.setFromRotationMatrix(matrix);
+
+    clamp_y		= { min: -0.5, max: 1.3 }; // $min reveals south-pole
+    clamp_y_obj 	= { x: 0, y: 0.8 };
+
+    var loading = false; // true if image is being loaded, false if not
+    var interactive = false; // true if the user is currently rotating (mouse down)
+    var stale = false; // true if matrix has been updated while image is being loaded
+
+    var lastUpdate = new Date(); // last update date/time
+
+    function getUrl()
+    {
+        matrix.multiplyMatrices(scaleMatrix, rotationMatrix);
+        matrix.multiply(translationMatrix);
+
+        var matrixStr = "";
+        for(var i=0; i < 16; i++) {
+            matrixStr += matrix.elements[i];
+            matrixStr += ",";
+        }
+        matrixStr = matrixStr.substr(0, matrixStr.length - 1);
+
+        //var url = "http://50.137.226.14:8080/volumeRenderer?volumeId=" + volumeId + "&matrix=" + matrixStr + "&blend_mode=" + blend_mode;
+        var url = "http://50.137.226.14:8080/volumeRenderer?volumeId=" + volumeId + "&matrix=" + matrixStr + "&blend_mode=" + blend_mode;
+        url += "&window_width=" + window_width;
+        url += "&window_level=" + window_level;
+
+        if (interactive === true) {
+            url += "&viewport_height=256&viewport_width=256&image_type=1&interpolation_type=0&desired_update_rate=" + interactiveFrameRate;
+        }
+        else {
+            url += "&viewport_height=512&viewport_width=512&image_type=0&interpolation_type=1&desired_update_rate=2";
+        }
+
+        if(blend_mode === 1) {
+            url += "&transfer_function_name=mip";
+        }
+
+        return url;
+    }
+
+    function loadAndDisplayImage() {
+        var url = getUrl();
+        loading = true;
+        stale = false;
+        $("#vr").attr('src', url);
+    }
+
+    $("#vr").on('load', function() {
+        loading = false;
+
+        if(stale === true)
+        {
+            loadAndDisplayImage();
+        }
+    });
+
+
+    $('#vr').on('mousedown', function(mde) {
+
+        interactive = true;
+
+        var mouseButton = mde.which;
+
+        deltaMousePos = { x:0, y:0};
+        prevMousePos = {x:mde.pageX, y:mde.pageY};
+
+        kSensitivity = 0.02;    	// drag sensitivity
+        kFriction = 0.03;       	// throw friction
+        dSensitivityFactor = 0.2;	// decrease to lower kSensitivity
+
+
+        function updateRotationMatrix(){
+            var UP 		 = {x:0, y:1, z:0};
+            var RIGHT    = {x:1, y:0, z:0};
+
+            var xRotation = new THREE.Quaternion();
+            var yRotation = new THREE.Quaternion();
+
+            deltaMousePos.x *= 1 - kFriction;
+            deltaMousePos.y *= 1 - kFriction;
+
+
+            xRotation.setFromAxisAngle(UP, deltaMousePos.x * (kSensitivity * dSensitivityFactor) );
+            yRotation.setFromAxisAngle(RIGHT, deltaMousePos.y * (kSensitivity * dSensitivityFactor) );
+
+            var rotation = new THREE.Quaternion();
+            rotation.multiplyQuaternions(xRotation, yRotation); //r56
+            quaternion.multiplyQuaternions( rotation, quaternion);
+
+            rotationMatrix.makeRotationFromQuaternion(quaternion);
+        }
+
+        function onMouseMove(mme) {
+
+            var thisUpdate = new Date();
+            lastUpdate = thisUpdate;
+
+            deltaMousePos.x = mme.pageX - prevMousePos.x;
+            deltaMousePos.y = mme.pageY - prevMousePos.y;
+            prevMousePos = {x: mme.pageX, y:mme.pageY};
+
+            if(mouseButton === 1) { // left mouse button = rotate
+                updateRotationMatrix();
+            }
+            else if(mouseButton ===2) {  // middle mouse button = pan
+                /*var scale = 1.0;
+                if(deltaMousePos.y < 0) {
+                    scale = 0.96;
+                } else if(deltaMousePos.y > 0) {
+                    scale = 1.04;
+                }
+                sm = new THREE.Matrix4();
+                sm.makeScale(scale, scale, scale);
+                scaleMatrix.multiply(sm);
+                */
+                 var sr = new THREE.Matrix4();
+                 sr.multiplyMatrices(scaleMatrix, rotationMatrix);
+                 sr.getInverse(sr);
+                 var v = new THREE.Vector3(deltaMousePos.x, -deltaMousePos.y, 0);
+                 var va = v.toArray();
+                 sr.applyToVector3Array(va);
+
+                 tm = new THREE.Matrix4();
+                 tm.makeTranslation(va[0], va[1], va[2]);
+                 translationMatrix.multiply(tm);
+            }
+            else if(mouseButton === 3) { // right mouse button = window/level
+                window_level += deltaMousePos.x;
+                window_width += deltaMousePos.y;
+                if(window_width < 1) {
+                    window_width = 1;
+                }
+                //console.log('ww/wl=' + window_width + '/' + window_level);
+
+            }
+
+            var url = getUrl();
+
+            if(loading === true) {
+                stale = true;
+            } else {
+                loadAndDisplayImage();
+            }
+        }
+
+        function onMouseUp() {
+
+            interactive = false;
+            var url = getUrl();
+            loadAndDisplayImage();
+
+            $(document).off('mousemove', onMouseMove);
+            $(document).off('mouseup', onMouseUp);
+        }
+
+        $(document).on('mousemove', onMouseMove);
+        $(document).on('mouseup', onMouseUp);
+
+    });
+
+    $('#vr').on('mousewheel DOMMouseScroll', function(mwe) {
+        interactive = true;
+        var thisUpdate = new Date();
+        lastUpdate = thisUpdate;
+        event.preventDefault();
+        var delta = event.wheelDelta || -event.detail;
+        var scale = 1.0;
+        if(delta < 0) {
+            scale = 0.96;
+        } else if(delta > 0) {
+            scale = 1.04;
+        }
+        sm = new THREE.Matrix4();
+        sm.makeScale(scale, scale, scale);
+        scaleMatrix.multiply(sm);
+
+        var url = getUrl();
+
+        if(loading === true) {
+            stale = true;
+        } else {
+            loadAndDisplayImage();
+        }
+
+        setTimeout(function() {
+            if(lastUpdate === thisUpdate) {
+                interactive = false;
+                var url = getUrl();
+                loadAndDisplayImage();
+            }
+        }, 1000);
+
+    });
+
+
+</script>
+
+</html>
