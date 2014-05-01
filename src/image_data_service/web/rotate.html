@@ -36,7 +36,7 @@
         </div>
         <div class="col-xs-6">
 
-            <img id="vr" width="512" height="512" src="http://50.137.226.14:8080/volumeRenderer?volumeId=volume1" draggable="false" oncontextmenu="return false;"/>
+            <img id="vr" width="512" height="512" src="/volumeRenderer?volumeId=volume1" draggable="false" oncontextmenu="return false;"/>
         </div>
 
     </div>
@@ -109,7 +109,7 @@
         matrixStr = matrixStr.substr(0, matrixStr.length - 1);
 
         //var url = "http://50.137.226.14:8080/volumeRenderer?volumeId=" + volumeId + "&matrix=" + matrixStr + "&blend_mode=" + blend_mode;
-        var url = "http://50.137.226.14:8080/volumeRenderer?volumeId=" + volumeId + "&matrix=" + matrixStr + "&blend_mode=" + blend_mode;
+        var url = "/volumeRenderer?volumeId=" + volumeId + "&matrix=" + matrixStr + "&blend_mode=" + blend_mode;
         url += "&window_width=" + window_width;
         url += "&window_level=" + window_level;
 

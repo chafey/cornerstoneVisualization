@@ -39,7 +39,7 @@
 
         </div>
         <div class="col-xs-6">
-            <img id="vr" width="512" height="512" src="http://50.137.226.14:8080/mpr?volumeId=volume3" draggable="false" oncontextmenu="return false;"/>
+            <img id="vr" width="512" height="512" src="/mpr?volumeId=volume3" draggable="false" oncontextmenu="return false;"/>
         </div>
 
     </div>
@@ -158,7 +158,7 @@ function getUrl()
     var reo = arrayToString(reslice_axes_origin);
 
     //var url = "http://50.137.226.14:8080/volumeRenderer?volumeId=" + volumeId + "&matrix=" + matrixStr + "&blend_mode=" + blend_mode;
-    var url = "http://50.137.226.14:8080/mpr?volumeId=" + volumeId
+    var url = "/mpr?volumeId=" + volumeId
             + "&axes_direction_cosines=" + adc
             + "&reslice_axes_origin=" + reo
             + "&blend_mode=" + blend_mode
