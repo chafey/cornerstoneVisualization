@@ -40,7 +40,7 @@ ENDIF(VTK_FOUND)
 # ImageDataService
 #--------------------------------------------------------------------------------------------------
 
-ADD_EXECUTABLE(image_data_service ${IMAGE_DATA_SERVICE_SOURCES} ${IMAGE_DATA_WEB_FILES} ${IMAGE_DATA_SERVICE_HEADERS})
+ADD_EXECUTABLE(image_data_service ${IMAGE_DATA_SERVICE_SOURCES} ${IMAGE_DATA_WEB_FILES} ${IMAGE_DATA_SERVICE_HEADERS} )
 if(VTK_LIBRARIES)
 TARGET_LINK_LIBRARIES(image_data_service ${VTK_LIBRARIES} ${Boost_LIBRARIES} http_server)
 else()

@@ -20,6 +20,8 @@
 
 //#include "system_status.h"
 
+namespace fs = boost::filesystem;
+
 void start(const char* address, const char* port, const char* dicomVolumeRoot, const char* volumeRoot, const char* documentRoot)
 {
     LINFO << "Server Root: http://" << address << ":" << port;
@@ -61,6 +63,20 @@ void start(const char* address, const char* port, const char* dicomVolumeRoot, c
 
 }
 
+static std::string get_data_directory(std::string directory_name)
+{
+#ifdef BOOST_OS_WINDOWS
+    std::string dataRoot = "%SystemDrive%\ProgramData\Cornerstone\VisualizationService";
+    boost::filesystem::create_directory("%SystemDrive%\ProgramData\Cornerstone");
+#else
+    std::string dataRoot = "/var/lib/CornerstoneVisualizationService";
+#endif
+    fs::path data_directory(dataRoot);
+    data_directory += directory_name;
+    boost::filesystem::create_directory(data_directory);
+    return data_directory.c_str();
+}
+
 int main(int argc, char** argv)
 {
     LINFO << "*********************************";
@@ -75,8 +91,10 @@ int main(int argc, char** argv)
     {
         if (argc != 5)
         {
-            std::string dicomVolumeRoot("/Users/chafey/DICOMVolumes/");
-            std::string volumeRoot("/Users/chafey/VolumeCache/");
+            get_data_directory("");
+            fs::path dicomVolumeRoot = get_data_directory("DICOMVolumes");
+            fs::path volumeRoot = get_data_directory("VolumeCache");
+            
             std::string documentRoot("/Users/chafey/src/cornerstoneVisualization/src/image_data_service");
             
             start("0.0.0.0", "8080", dicomVolumeRoot.c_str(), volumeRoot.c_str(), documentRoot.c_str());
