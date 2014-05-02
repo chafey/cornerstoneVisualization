@@ -1,33 +1,220 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- twitter bootstrap CSS stylesheet - not required by cornerstoneTools -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .chart {
+            margin-left: 42px;
+        }
 
+        .chart rect {
+            fill: steelblue;
+            stroke: white;
+        }
 
-
-</style>
+    </style>
+</head>
 <body>
-<script src="d3.js"></script>
-<script src="jquery-2.1.0.min.js"></script>
+<div class="container">
+    <div class="page-header">
+        <h1>
+            Cornerstone Visualization Service
+        </h1>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 content">
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <span>Uptime: </span><span id="uptime"></span>
+        </div>
+        <div class="col-xs-6">
+            <span>Render Request Count: </span><span id="renderRequestCount"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <span>Memory Used: </span><span id="memoryUsed"></span>
+        </div>
+        <div class="col-xs-6">
+            <span>CPU Time: </span><span id="cpuTime"></span>
+        </div>
+
+    </div>
+
+    <div id="volumes">
+    </div>
+
+</div> <!-- container -->
+
+</body>
+
+<script src="bower_components/d3/d3.js"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script>
+
+
+    function bytesToSize(bytes) {
+        var k = 1000;
+        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes === 0) return '0 Bytes';
+        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)),10);
+        return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+    }
+
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+
+    var data = [];
+    var w = 30;
+    var h = 80;
+    var volumeCount = 0;
+    var chart1;
+
+    var x = d3.scale.linear()
+            .domain([0, 1])
+            .range([0, w]);
+
+    var y = d3.scale.linear()
+            .domain([0, 80])
+            .rangeRound([0, h]);
+
+    function redraw1() {
+
+        chart1.selectAll("rect")
+                .data(data)
+                .transition()
+                .duration(0)
+                .attr("y", function(d) { return h - y(d.value) - .5; })
+                .attr("height", function(d) { return y(d.value); });
+
+    }
+
+    function dimensions(dim)
+    {
+        return dim.x + " x " + dim.y + " x " + dim.z;
+    }
+
+    function sizeInMM(v)
+    {
+        var x = v.dimensions.x * v.spacing.x;
+        var y = v.dimensions.y * v.spacing.y;
+        var z = v.dimensions.z * v.spacing.z;
+        return x.toFixed(2) + " x " + y.toFixed(2) + " x " + z.toFixed(2);
+    }
+
+    function arrayToString(ar) {
+        var str = "";
+        for(var i=0; i < ar.length; i++) {
+            str += ar[i] + ",";
+        }
+        str = str.substr(0, str.length - 1);
+        return str;
+    }
 
 
     function update() {
         $.getJSON('/status', function(resp) {
 
-            var data = [];
-            resp.render_history.forEach(function(d) {
-                data.push(d.count);
-            })
+            $('#uptime').text(resp.uptime);
+            $('#renderRequestCount').text(numberWithCommas(resp.renderRequestCount));
+            $('#memoryUsed').text(bytesToSize(resp.memoryUsed));
+            $('#cpuTime').text(resp.cpuTime.toFixed(1) + " seconds");
 
-            console.log(data);
+            if(volumeCount !== resp.volumes.length) {
+                $('#volumes').empty();
 
+                resp.volumes.forEach(function(v) {
+                    $('#volumes').append('<hr>');
+
+                    $('#volumes').append('<div class="row">'
+                            + '<div class="col-xs-6"><span>Volume: </span><span>' + v.volumeId + '</span></div>'
+                            + '<div class="col-xs-6"><span>Memory Used: </span><span>' + bytesToSize(v.actualMemorySizeKB * 1024) + '</span></div>'
+                            + '</div>');
+                    $('#volumes').append('<div class="row">'
+                            + '<div class="col-xs-6"><span>Dimensions: </span><span>' + dimensions(v.dimensions) + '</span></div>'
+                            + '<div class="col-xs-6"><span>Size in MM: </span><span>' + sizeInMM(v) + '</span></div>'
+                            + '</div>');
+                    $('#volumes').append('<div class="row">'
+                            + '<img width=128 height=128 src="../mpr?volumeId=' + v.volumeId + '">'
+                            + '<img width=128 height=128 src="../mpr?volumeId=' + v.volumeId + '&axes_direction_cosines=0,-1,0,0,0,-1,-1,0,0">'
+                            + '<img width=128 height=128 src="../mpr?volumeId=' + v.volumeId + '&axes_direction_cosines=1,0,0,0,0,-1,0,-1,0">'
+                            + '<img width=128 height=128 src="../volumeRenderer?volumeId=' + v.volumeId + '">'
+                            + '</div>');
+
+                });
+
+                volumeCount = resp.volumes.length;
+            }
+
+
+
+            if(data.length === 0) {
+                createChart = true;
+            } else {
+                createChart = false;
+            }
+
+            var dataset = [];
+            data = [];
+            resp.render_history.forEach(function(d, i) {
+                dataset.push(d.count);
+                data.push({
+                    time: i,
+                    value: d.count
+                });
+            });
+
+            if(createChart === true) {
+                console.log('creating new chart');
+
+                chart1 = d3.select(".content").append("svg")
+                        .attr("class", "chart")
+                        .attr("width", "100%")//w * data.length - 1)
+                        .attr("height", h);
+
+                chart1.selectAll("rect")
+                        .data(data)
+                        .enter().append("rect")
+                        .attr("x", function(d, i) { return x(i) - .5; })
+                        .attr("y", function(d) { return h - y(d.value) - .5; })
+                        .attr("width", w)
+                        .attr("height", function(d) { return y(d.value); });
+
+                chart1.append("line")
+                        .attr("x1", 0)
+                        .attr("x2", w * data.length)
+                        .attr("y1", h - .5)
+                        .attr("y2", h - .5)
+                        .style("stroke", "#000");
+            }
+
+            redraw1();
         });
 
         setTimeout(update, 1000);
     }
 
+
+    function resize()
+    {
+        w = ($('.content').width() -50 )/ 31;
+    }
+
+    $(window).resize(resize);
+
+    resize();
     update();
 
-
-
 </script>
+
+</html>

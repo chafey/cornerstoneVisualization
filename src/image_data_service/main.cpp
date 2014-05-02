@@ -1,14 +1,3 @@
-
-
-
-
-#include <iostream>
-#include <string>
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <boost/filesystem.hpp>
-#include "../http_server/server.hpp"
-#include "../http_server/file_request_handler.hpp"
 #include "status_request_handler.h"
 #include "volume_loader_handler.h"
 #include "volume_renderer_handler.h"
@@ -17,6 +6,20 @@
 #include "volume_loader.h"
 #include "loaded_volumes_handler.h"
 #include "log.h"
+
+
+#include "../http_server/server.hpp"
+#include "../http_server/file_request_handler.hpp"
+
+
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/predef.h>
+#include <boost/filesystem.hpp>
+
+
+#include <iostream>
+#include <string>
 
 //#include "system_status.h"
 
@@ -65,9 +68,8 @@ void start(const char* address, const char* port, const char* dicomVolumeRoot, c
 
 static std::string get_data_directory(std::string directory_name)
 {
-#ifdef BOOST_OS_WINDOWS
-    std::string dataRoot = "%SystemDrive%\ProgramData\Cornerstone\VisualizationService";
-    boost::filesystem::create_directory("%SystemDrive%\ProgramData\Cornerstone");
+#if BOOST_OS_WINDOWS == 1
+    std::string dataRoot = "%SystemDrive%\\ProgramData\\Cornerstone\\VisualizationService";
 #else
     std::string dataRoot = "/var/lib/CornerstoneVisualizationService";
 #endif
@@ -91,9 +93,8 @@ int main(int argc, char** argv)
     {
         if (argc != 5)
         {
-            get_data_directory("");
-            fs::path dicomVolumeRoot = get_data_directory("DICOMVolumes");
-            fs::path volumeRoot = get_data_directory("VolumeCache");
+            fs::path dicomVolumeRoot = get_data_directory("/DICOMVolumes");
+            fs::path volumeRoot = get_data_directory("/VolumeCache");
             
             std::string documentRoot("/Users/chafey/src/cornerstoneVisualization/src/image_data_service");
             

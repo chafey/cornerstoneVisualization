@@ -21,6 +21,6 @@ namespace image_data_service {
     {
         start_time_ = boost::posix_time::second_clock::local_time();
     }
-    
+
 } // namespace image_data_service
 

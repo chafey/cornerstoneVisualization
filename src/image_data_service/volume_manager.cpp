@@ -55,7 +55,7 @@ namespace image_data_service {
 
         // Load from dicom
         volume_loader vl;
-        vtkSmartPointer<vtkImageData> imageData = vl.load_volume_from_dicom(volume_root_ + volumeId + "/");
+        vtkSmartPointer<vtkImageData> imageData = vl.load_volume_from_dicom(dicom_volume_root_ + "/" + volumeId + "/");
         vc.write(volumeId, imageData);
         volumes_[volumeId] = new volume(imageData);
         volumes_[volumeId] ->volumeId = volumeId;

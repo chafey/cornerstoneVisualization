@@ -36,6 +36,7 @@ namespace image_data_service {
 
         put(pt, "dataType", vol.image_data()->GetScalarType());
         put(pt, "actualMemorySizeKB", vol.image_data()->GetActualMemorySize());
+        put(pt, "volumeId", vol.volumeId);
         
         return pt;
     }

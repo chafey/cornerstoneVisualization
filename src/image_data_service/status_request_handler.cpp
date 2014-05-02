@@ -10,6 +10,10 @@
 #include "system_status.h"
 #include "json_reply.h"
 #include "json_property_tree.h"
+#include "process_info.h"
+#include "volume_manager.h"
+#include "volume_to_property_tree.h"
+#include "cpu_time.h"
 
 #include "../http_server/reply.hpp"
 #include "../http_server/request.hpp"
@@ -40,15 +44,34 @@ namespace image_data_service {
             return;
         }
         
-        system_status& ss = system_status::instance();
         
+        system_status& ss = system_status::instance();
+        volume_manager& vm = volume_manager::instance();
+        std::vector<volume*> volumes = vm.loaded_volumes();
+
         ptree pt;
         pt.put("uptime", boost::posix_time::to_simple_string(ss.uptime()));
+        pt.put("renderRequestCount", ss.history().size());
+        pt.put("memoryUsed", getCurrentRSS());
+        pt.put("cpuTime", getCPUTime());
+
+        
+        ptree volumeArrayElement;
+        ptree volumeArrayChild;
+        
+        for(int i=0; i < volumes.size(); i++)  {
+            volume* vol = volumes[i];
+            ptree volumeArrayElement;
+            volumeArrayElement = volume_to_property_tree::from(*vol);
+            volumeArrayChild.push_back(std::make_pair("",volumeArrayElement));
+
+        }
+        pt.put_child(ptree::path_type("volumes"), volumeArrayChild);
         
         // return a summary of activity over the past 30 seconds
         boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
 
-        const int maxSeconds = 10;
+        const int maxSeconds = 30;
         
         const std::vector<render_history_item>& history = ss.history();
         int index =  history.size() -1;

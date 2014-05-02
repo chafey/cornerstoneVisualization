@@ -29,7 +29,7 @@ namespace image_data_service {
     static std::string make_volume_path(const std::string& volumeRoot, const std::string& volumeId)
     {
         boost::filesystem::path volumePath(volumeRoot);
-        volumePath += volumeId;
+        volumePath += "/" + volumeId;
         return volumePath.string();
     }
     
