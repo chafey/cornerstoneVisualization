@@ -145,18 +145,16 @@
                             + '<div class="col-xs-6"><span>Size in MM: </span><span>' + sizeInMM(v) + '</span></div>'
                             + '</div>');
                     $('#volumes').append('<div class="row">'
-                            + '<img width=128 height=128 src="../mpr?volumeId=' + v.volumeId + '">'
-                            + '<img width=128 height=128 src="../mpr?volumeId=' + v.volumeId + '&axes_direction_cosines=0,-1,0,0,0,-1,-1,0,0">'
-                            + '<img width=128 height=128 src="../mpr?volumeId=' + v.volumeId + '&axes_direction_cosines=1,0,0,0,0,-1,0,-1,0">'
-                            + '<img width=128 height=128 src="../volumeRenderer?volumeId=' + v.volumeId + '">'
+                            + '<img width=196 height=196 src="../mpr?volumeId=' + v.volumeId + '&viewport_width=196&viewport_height=196">'
+                            + '<img width=196 height=196 src="../mpr?volumeId=' + v.volumeId + '&axes_direction_cosines=0,-1,0,0,0,-1,-1,0,0&viewport_width=196&viewport_height=196">'
+                            + '<img width=196 height=196 src="../mpr?volumeId=' + v.volumeId + '&axes_direction_cosines=1,0,0,0,0,-1,0,-1,0&viewport_width=196&viewport_height=196">'
+                            + '<img width=196 height=196 src="../volumeRenderer?volumeId=' + v.volumeId + '">'
                             + '</div>');
 
                 });
 
                 volumeCount = resp.volumes.length;
             }
-
-
 
             if(data.length === 0) {
                 createChart = true;
