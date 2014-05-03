@@ -1,3 +1,5 @@
+#include <boost/asio.hpp>
+
 #include "status_request_handler.h"
 #include "volume_loader_handler.h"
 #include "volume_renderer_handler.h"
@@ -12,7 +14,6 @@
 #include "../http_server/file_request_handler.hpp"
 
 
-#include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/predef.h>
 #include <boost/filesystem.hpp>
@@ -61,23 +62,38 @@ void start(const char* address, const char* port, const char* dicomVolumeRoot, c
     //image_data_service::volume_manager::instance().get("volume1");
     
     // create the http server and run it until stopped
-    http::server::server s(address, port);
-    s.run();
-
+    try {
+		http::server::server s(address, port);
+		s.run();
+	}
+	catch(...) 
+	{
+		std::cout << "unhandled exception caught, terminating process" << endl;
+	}
 }
 
 static std::string get_data_directory(std::string directory_name)
 {
 #if BOOST_OS_WINDOWS == 1
-    std::string dataRoot = "%SystemDrive%\\ProgramData\\Cornerstone\\VisualizationService";
+    std::string dataRoot = "c:\\ProgramData\\Cornerstone\\VisualizationService";
 #else
     std::string dataRoot = "/var/lib/CornerstoneVisualizationService";
 #endif
     fs::path data_directory(dataRoot);
     data_directory += directory_name;
     boost::filesystem::create_directory(data_directory);
-    return data_directory.c_str();
+    return data_directory.string();
 }
+
+static std::string get_document_directory()
+{
+#if BOOST_OS_WINDOWS == 1
+	return "C:/src/GitHub/cornerstoneVisualization/src/image_data_service";
+#else
+	return "/Users/chafey/src/cornerstoneVisualization/src/image_data_service";
+#endif
+}
+
 
 int main(int argc, char** argv)
 {
@@ -89,23 +105,22 @@ int main(int argc, char** argv)
     boost::filesystem::path full_path( boost::filesystem::current_path() );
     LINFO << "Current Path: " << full_path;
     
+	vtkObject::GlobalWarningDisplayOff();
+
     try
     {
         if (argc != 5)
         {
-            fs::path dicomVolumeRoot = get_data_directory("/DICOMVolumes");
-            fs::path volumeRoot = get_data_directory("/VolumeCache");
-            
-            std::string documentRoot("/Users/chafey/src/cornerstoneVisualization/src/image_data_service");
-            
-            start("0.0.0.0", "8080", dicomVolumeRoot.c_str(), volumeRoot.c_str(), documentRoot.c_str());
+            std::string dicomVolumeRoot = get_data_directory("/DICOMVolumes");
+            std::string volumeRoot = get_data_directory("/VolumeCache");
+			std::string documentRoot(get_document_directory());
+			
+            start("localhost", "8080", dicomVolumeRoot.c_str(), volumeRoot.c_str(), documentRoot.c_str());
         }
         else
         {
             start(argv[1], argv[2], argv[3], argv[4], argv[5]);
         }
-        
-        
     }
     catch (std::exception& e)
     {

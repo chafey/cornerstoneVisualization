@@ -12,7 +12,9 @@ namespace image_data_service {
     static vtkSmartPointer<vtkVolumeMapper> create_volume_mapper()
     {
         vtkSmartPointer<vtkSmartVolumeMapper> mapper = vtkSmartPointer<vtkSmartVolumeMapper>::New();
-        mapper->SetRequestedRenderMode(vtkSmartVolumeMapper::RayCastRenderMode);
+        //mapper->SetRequestedRenderMode(vtkSmartVolumeMapper::RayCastRenderMode);
+        //mapper->SetRequestedRenderMode(vtkSmartVolumeMapper::TextureRenderMode );
+        mapper->SetRequestedRenderMode(vtkSmartVolumeMapper::GPURenderMode  );
         return mapper;
     }
     

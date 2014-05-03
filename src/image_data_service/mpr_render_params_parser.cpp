@@ -42,9 +42,9 @@ namespace image_data_service {
             boost::lexical_cast<double>(parameters["slab_resolution"]) : result.slab_resolution;
 
         result.viewport_height = parameters.count("viewport_height") ?
-            boost::lexical_cast<double>(parameters["viewport_height"]) : result.viewport_height;
+            boost::lexical_cast<int>(parameters["viewport_height"]) : result.viewport_height;
         result.viewport_width = parameters.count("viewport_width") ?
-            boost::lexical_cast<double>(parameters["viewport_width"]) : result.viewport_width;
+            boost::lexical_cast<int>(parameters["viewport_width"]) : result.viewport_width;
         result.interpolation_mode = parameters.count("interpolation_mode") ?
             boost::lexical_cast<int>(parameters["interpolation_mode"]) : result.interpolation_mode;
         

@@ -14,6 +14,7 @@
 #include <string>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 
 #include "mime_types.hpp"
 #include "reply.hpp"
@@ -91,7 +92,7 @@ namespace http {
                         html+= "</pre></body></html>";
                         
                         
-                        std::cerr << e.what();
+                        std::cout << e.what();
                         
                         rep.status = reply::internal_server_error;
                         rep.content =html.c_str();

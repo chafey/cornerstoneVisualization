@@ -74,7 +74,7 @@ namespace image_data_service {
         const int maxSeconds = 30;
         
         const std::vector<render_history_item>& history = ss.history();
-        int index =  history.size() -1;
+        size_t index =  history.size() -1;
         std::map<int, int> summary;
         while(index >= 0)
         {

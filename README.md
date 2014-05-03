@@ -14,8 +14,44 @@ The best way to see the power of this library is to actually see it in use.
 
 http://lurydemo.hopto.org:8080/web/
 
-Building on Mac OS X
---------------------
+Building on Windows 7x64 with Visual Studio 2010 SP1
+-------------------------------------------------
+
+Install the following dependencies:
+
+* [CMake](http://cmake.org/) Download the MSI installer (I used 2.8.12.2)
+* [boost](http://www.boost.org/) Download the precompiled binaries from [here](http://boost.teeks99.com/bin/1.55.0/boost_1_55_0-msvc-10.0-64.exe) and install to the default directory (C:/local/boost_1_55_0).  You can of course do a custom boost build if you know how to do that.
+* [vtk](http://www.vtk.org/) Download the source and follow the directions to build both the debug and release builds (I used 6.1.0 with the source in C:\src\VTK-6.1.0 and the build directory C:\src\VTK-bin)
+* [node.js] (http://www.nodejs.org) Download and run the installer (I used 0.10.28)
+
+Add the VTK and boost DLL's to your path:
+C:\local\boost_1_55_0\lib64-msvc-10.0;C:\src\VTK-bin\bin\Release
+
+Open a NODE.JS window and install the following node.js based dependencies for the web component
+
+* [grunt-cli] (https://github.com/gruntjs/grunt-cli) npm install -g grunt-cli
+* [bower] (http://bower.io/) npm install -g bower
+
+Initialize the web component
+
+> cd src/image_data_service/web
+
+> bower install
+
+Create a build directory and run cmake to generate an Visual Studio 2010 project
+
+> cd ../../..
+
+> mkdir build
+
+> cd build
+
+> cmake -G "Visual Studio 10 Win64" ..
+
+Open the CMake generated Visual Studio project from build/cornerstoneVisualizationService.sln and build image_data_service
+
+Building on Mac OS X Mavericks with XCode 5
+-------------------------------------------
 
 Install the following dependencies or install via [homebrew](http://brew.sh/) on Mac OS X:
 
@@ -33,8 +69,6 @@ Initialize the web component
 
 > cd src/image_data_service/web
 
-> npm install
-
 > bower install
 
 Create a build directory and run cmake to generate an XCode project
@@ -50,8 +84,8 @@ Create a build directory and run cmake to generate an XCode project
 Open the CMake generated XCode project from build/cornerstoneVisualizationService.xcodeproj
 and build image_data_service
 
-Running on Mac OS X
--------------------
+Running on Mac OS X Mavericks
+-----------------------------
 
 Create a unique directory name under /var/lib/CornerstoneVisualizationService/DICOMVolumes for each volume.
 The directory name will be the volumeId for this volume.  Copy all the DICOM files for that volume into the
@@ -89,6 +123,49 @@ volume_root (/Users/chafey/VolumeCache)
 The directory where built volumes are stored/cached.  The cached file is the volumeId
 
 doc_root (/Users/chafey/src/cornerstoneVisualization/src/image_data_service)
+
+The directory to server static HTTP files from.
+
+Running on Windows 7
+-------------------
+
+Create a unique directory name under c:/ProgramData/Cornerstone/VisualizationService/DICOMVolumes for each volume.
+The directory name will be the volumeId for this volume.  Copy all the DICOM files for that volume into the
+newly created directory.  The server will automatically load the DICOM files based on the volumeId passed to it.
+It will also cache the volume in a VTK format in c:/ProgramData/Cornerstone/VisualizationService/VolumeCache which
+makes it load faster.  You can safely delete the volumes in the cache and the service will automatically
+regenerate them for you.  Once you have the server running, use your web browser to connect to the
+status service (e.g. http://localhost:8080/web/)
+
+For now, the easiest thing to do is run the service from within visual studio.  In the future, the service will be
+launched by another process.
+
+Usage: image_data_service <address> <port> <dicom_volume_root> <volume_root> <doc_root>
+
+address (http://localhost)
+
+The address to listen for incoming requests.  Use http://0.0.0.0 to listen to requests on all network interfaces.
+Note that connecting to localhost when it is listening on 0.0.0.0 results in very low performance - this needs to be investigated.
+In real deployments you probably want to have a http server in front of the visualization service to provide authentication
+and routing capabilities.  In this case, you probably want the visualization service to listen to localhost only (e.g. http://localhost)
+
+port (8080)
+
+The TCP port to listen for incoming http requests.  This must be unique for each running visualization service.
+The port will typically be assigned by the process launching the visualization service.  (NOTE: Alternatively
+we can have the service grab any port available and return the port it is using to the launching process via
+stdout)
+
+dicom_volume_root (c:/ProgramData/Cornerstone/VisualizationService/DICOMVolumes)
+
+The directory where the visualization service will look for DICOM files to build volumes from.  The volumeId is currently assumed
+to be the directory name here that contains the related DICOM files.
+
+volume_root (c:/ProgramData/Cornerstone/VisualizationService/VolumeCache)
+
+The directory where built volumes are stored/cached.  The cached file is the volumeId
+
+doc_root (C:/src/GitHub/cornerstoneVisualization/src/image_data_service)
 
 The directory to server static HTTP files from.
 
