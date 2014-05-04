@@ -20,6 +20,7 @@
 #include "image_reply.h"
 #include "matrix_parser.h"
 #include "render_event.h"
+#include "log.h"
 
 // include headers from other projects
 #include "../http_server/request.hpp"
@@ -33,9 +34,11 @@
 #include <vtkRendererCollection.h>
 #include <vtkCamera.h>
 #include <vtkSmartVolumeMapper.h>
+#include <vtkTransform.h>
 
 // include boost headers
 #include <boost/timer/timer.hpp>
+#include <algorithm>    // std::max
 
 
 namespace image_data_service {
@@ -62,7 +65,7 @@ namespace image_data_service {
         
         // Update the volume mapper parameters
         volumeRenderer->volume_mapper->SetBlendMode(renderParams.blend_mode);
-        
+        volumeRenderer->volume_mapper->SetRequestedRenderMode(renderParams.render_engine);
         // TODO: Implement window/level.
         // NOTE: This code doesn't "look right" so it is commented out for now
         /*
@@ -79,8 +82,20 @@ namespace image_data_service {
         vtkSmartPointer<vtkMatrix4x4> mm = matrix_parser::from_string(renderParams.matrix);
         vtkSmartPointer<vtkCamera> camera = volumeRenderer->renderer->MakeCamera();
         camera->DeepCopy(volumeRenderer->camera);
-        camera->SetModelTransformMatrix(mm);
-        
+      
+		vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
+		transform->SetMatrix(mm);
+		transform->Inverse();
+		camera->ApplyTransform(transform);
+		
+		// Set the clipping planes so the volume doesn't get clipped
+		double clipNear = camera->GetDistance() - volume.max_radius;
+		double clipFar = clipNear + (volume.max_radius * 2.0);
+		if(clipNear < 1.0) {
+			clipNear = 1.0;
+		}
+		camera->SetClippingRange(clipNear, clipFar);
+		
         // update the volume renderer parameters
         volumeRenderer->renderer->SetActiveCamera(camera);
         

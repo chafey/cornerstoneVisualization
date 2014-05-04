@@ -21,7 +21,19 @@ namespace image_data_service {
         
         //min_value = valuesRange[0];
         //max_value = valuesRange[1];
-    }
+
+		int dims[3];
+		imageData->GetDimensions(dims);
+		
+		double spacing[3];
+		imageData->GetSpacing(spacing);
+		
+		sizeInMM[0] = dims[0] * spacing[0];
+		sizeInMM[1] = dims[1] * spacing[1];
+		sizeInMM[2] = dims[2] * spacing[2];
+
+		max_radius = sqrt(sizeInMM[0] * sizeInMM[0] + sizeInMM[1] * sizeInMM[1] + sizeInMM[2] * sizeInMM[2]) / 2.0;
+	}
     
     boost::shared_ptr<struct mpr_renderer> volume::mpr_renderer()
     {

@@ -1,5 +1,6 @@
 #include "volume_renderer.h"
 // include headers from this project
+#include "log.h"
 // include headers from other projects
 // include vtk headers
 #include <vtkSmartVolumeMapper.h>
@@ -9,17 +10,19 @@
 namespace image_data_service {
     
     
-    static vtkSmartPointer<vtkVolumeMapper> create_volume_mapper()
+    static vtkSmartPointer<vtkSmartVolumeMapper> create_volume_mapper()
     {
         vtkSmartPointer<vtkSmartVolumeMapper> mapper = vtkSmartPointer<vtkSmartVolumeMapper>::New();
-        //mapper->SetRequestedRenderMode(vtkSmartVolumeMapper::RayCastRenderMode);
+        mapper->SetRequestedRenderMode(vtkSmartVolumeMapper::RayCastRenderMode);
         //mapper->SetRequestedRenderMode(vtkSmartVolumeMapper::TextureRenderMode );
-        mapper->SetRequestedRenderMode(vtkSmartVolumeMapper::GPURenderMode  );
+        //mapper->SetRequestedRenderMode(vtkSmartVolumeMapper::GPURenderMode  );
+        //mapper->SetRequestedRenderMode(vtkSmartVolumeMapper::RayCastAndTextureRenderMode  );
         return mapper;
     }
     
     volume_renderer::volume_renderer(vtkSmartPointer<vtkImageData> imageData, int maxWidth, int maxHeight)
     {
+		LINFO << "volume_renderer()";
         max_width = maxWidth;
         max_height = maxHeight;
         
@@ -38,7 +41,7 @@ namespace image_data_service {
         volume_mapper->SetInputData( imageData );
         volume_mapper->CroppingOff(); // this may be the default...
 
-        volume = vtkSmartPointer<vtkVolume>::New();
+		volume = vtkSmartPointer<vtkVolume>::New();
         volume->SetMapper(volume_mapper);
         volume->SetProperty(volume_property);
         
@@ -52,6 +55,7 @@ namespace image_data_service {
         
         camera = vtkSmartPointer<vtkCamera>::New();
         camera->DeepCopy(activeCamera);
+		LINFO << "volume_renderer() - done";
     }
     
     

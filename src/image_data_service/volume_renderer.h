@@ -19,13 +19,13 @@
 #include <vtkVolume.h>
 #include <vtkCamera.h>
 #include <vtkImageData.h>
+#include <vtkSmartVolumeMapper.h>
 
 // headers from boost
 #include <boost/noncopyable.hpp>
 // headers from stdlib
 
 // forward declarations
-
 
 namespace image_data_service {
     
@@ -39,7 +39,7 @@ namespace image_data_service {
         
         vtkSmartPointer<vtkVolumeProperty> volume_property;
         
-        vtkSmartPointer<vtkVolumeMapper> volume_mapper;
+        vtkSmartPointer<vtkSmartVolumeMapper> volume_mapper;
         
         vtkSmartPointer<vtkVolume> volume;
         

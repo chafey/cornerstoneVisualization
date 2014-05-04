@@ -47,7 +47,13 @@ namespace image_data_service {
         
         boost::shared_ptr<struct volume_renderer> volume_renderer(int width, int height);
         
-    private:
+		// the distance from the center of the volume to the farthest corner
+		double max_radius;
+
+		// the size in MM of the volume x,y,z
+		double sizeInMM[3];
+
+	private:
         
         vtkSmartPointer<vtkImageData> image_data_;
 

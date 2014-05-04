@@ -15,7 +15,6 @@
         </h1>
         Rotate: Left Mouse
         Pan: Middle Mouse
-        W/L: Right Mouse
         Zoom: Mouse Wheel
 
     </div>
@@ -26,17 +25,23 @@
                 <a href="#" id="blend_mode_mip" class="list-group-item">MIP</a>
             </ul>
 
+			<ul class="list-group">
+                <a href="#" id="software_render_engine" class="list-group-item active">Software Renderer</a>
+                <a href="#" id="gpu_render_engine" class="list-group-item">GPU Renderer</a>
+                <a href="#" id="texture_render_engine" class="list-group-item">Texture Renderer</a>
+            </ul>
+
+			
             <hr>
 
             <span>Interactive Frame Rate</span>
             <input id="frameRate" type="text" placeholder="e.g. 1000" value="15" size="3">
             <button id="apply" class="btn">Apply</button>
-            <button id="image_hq" class="btn">High Quality Image</button>
 
         </div>
         <div class="col-xs-6">
 
-            <img id="vr" width="512" height="512" src="/volumeRenderer?volumeId=volume1" draggable="false" oncontextmenu="return false;"/>
+            <img id="vr" width="512" height="512" src="/volumeRenderer?volumeId=volume4" draggable="false" oncontextmenu="return false;"/>
         </div>
 
     </div>
@@ -45,7 +50,37 @@
 <script>
 
     var interactiveFrameRate = 15;
+	var render_engine = 2;
+	var interactive_interpolation = 0;
+	
+	$('#software_render_engine').click(function() {
+		render_engine = 2;
+		interactive_interpolation = 0;
+		$('#software_render_engine').addClass('active');
+		$('#gpu_render_engine').removeClass('active');
+		$('#texture_render_engine').removeClass('active');
+		loadAndDisplayImage();
+	});
 
+	$('#gpu_render_engine').click(function() {
+		render_engine = 4;
+		interactive_interpolation = 1;
+		$('#software_render_engine').removeClass('active');
+		$('#gpu_render_engine').addClass('active');
+		$('#texture_render_engine').removeClass('active');
+		loadAndDisplayImage();
+	});
+	
+	$('#texture_render_engine').click(function() {
+		render_engine = 3;
+		interactive_interpolation = 1;
+		$('#software_render_engine').removeClass('active');
+		$('#gpu_render_engine').removeClass('active');
+		$('#texture_render_engine').addClass('active');
+		loadAndDisplayImage();
+	});
+
+	
     $('#apply').click(function() {
         interactiveFrameRate = parseInt($('#frameRate').val());
     });
@@ -54,28 +89,24 @@
         interactiveFrameRate = parseInt($('#frameRate').val());
     });
 
-
-    function activate(id)
-    {
-        $('a').removeClass('active');
-        $(id).addClass('active');
-    }
-
     var blend_mode = 0;
     $('#blend_mode_vr').click(function() {
-        activate("#blend_mode_vr");
-        blend_mode = 0;
+		$('#blend_mode_vr').addClass('active');
+		$('#blend_mode_mip').removeClass('active');
+ 
+		blend_mode = 0;
         loadAndDisplayImage();
         return false;
     });
     $('#blend_mode_mip').click(function() {
-        activate("#blend_mode_mip");
+		$('#blend_mode_vr').removeClass('active');
+		$('#blend_mode_mip').addClass('active');
         blend_mode = 1;
         loadAndDisplayImage();
         return false;
     });
 
-    var volumeId = 'volume1';
+    var volumeId = 'volume4';
 
     matrix = new THREE.Matrix4();
     rotationMatrix = new THREE.Matrix4();
@@ -109,15 +140,15 @@
         matrixStr = matrixStr.substr(0, matrixStr.length - 1);
 
         //var url = "http://50.137.226.14:8080/volumeRenderer?volumeId=" + volumeId + "&matrix=" + matrixStr + "&blend_mode=" + blend_mode;
-        var url = "/volumeRenderer?volumeId=" + volumeId + "&matrix=" + matrixStr + "&blend_mode=" + blend_mode;
+        var url = "/volumeRenderer?volumeId=" + volumeId + "&matrix=" + matrixStr + "&blend_mode=" + blend_mode + "&render_engine=" + render_engine;
         url += "&window_width=" + window_width;
         url += "&window_level=" + window_level;
 
         if (interactive === true) {
-            url += "&viewport_height=256&viewport_width=256&image_type=1&interpolation_type=0&desired_update_rate=" + interactiveFrameRate;
+            url += "&viewport_height=512&viewport_width=512&image_type=1&interpolation_type=" + interactive_interpolation + "&desired_update_rate=" + interactiveFrameRate;
         }
         else {
-            url += "&viewport_height=512&viewport_width=512&image_type=0&interpolation_type=1&desired_update_rate=2";
+            url += "&viewport_height=512&viewport_width=512&image_type=0&interpolation_type=1&desired_update_rate=0";
         }
 
         if(blend_mode === 1) {
@@ -219,6 +250,7 @@
                 if(window_width < 1) {
                     window_width = 1;
                 }
+				return;// do nothing for now
                 //console.log('ww/wl=' + window_width + '/' + window_level);
 
             }

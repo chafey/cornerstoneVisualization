@@ -43,7 +43,8 @@ namespace image_data_service {
     /// reads a volume from the cache
     vtkSmartPointer<vtkImageData> volume_cache::read(const std::string& volumeId)
     {
-        LOG_VERBOSE(1) << "volume_cache::read(" + volumeId + ")";
+        //LOG_VERBOSE(1) << "volume_cache::read(" + volumeId + ")";
+        LINFO << "volume_cache::read(" + volumeId + ")";
 
         vtkSmartPointer<vtkXMLImageDataReader> reader = vtkSmartPointer<vtkXMLImageDataReader>::New();
         std::string fileName = make_volume_path(volume_root_, volumeId);
@@ -51,6 +52,7 @@ namespace image_data_service {
         reader->Update();
         vtkSmartPointer<vtkImageData> imageData(reader->GetOutput());
         
+        LINFO << "volume_cache::read(" + volumeId + ") - done";
         return imageData;
     }
     

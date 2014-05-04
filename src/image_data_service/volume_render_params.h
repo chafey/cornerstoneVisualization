@@ -35,7 +35,8 @@ namespace image_data_service {
         int window_width;
         int window_level;
         int projection_type; //0 = perspective, 1 = parallel
-        
+        int render_engine; // 0 = default, 1 = software/texture, 2 = software, 3 = texture, 4 = gpu
+
         // Render Performance / Quality related
         double desired_update_rate;
         int viewport_width;
