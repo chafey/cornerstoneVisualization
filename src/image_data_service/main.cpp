@@ -115,7 +115,7 @@ int main(int argc, char** argv)
             std::string volumeRoot = get_data_directory("/VolumeCache");
 			std::string documentRoot(get_document_directory());
 			
-            start("localhost", "8080", dicomVolumeRoot.c_str(), volumeRoot.c_str(), documentRoot.c_str());
+            start("0.0.0.0", "8080", dicomVolumeRoot.c_str(), volumeRoot.c_str(), documentRoot.c_str());
         }
         else
         {
