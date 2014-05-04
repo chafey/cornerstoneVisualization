@@ -18,7 +18,7 @@ namespace image_data_service {
         window_width = 270;
         window_level = 340;
         projection_type = 1; // parallel
-        render_engine = 0; // software
+        render_engine = 2; // software
 
         desired_update_rate = 2.0; // good image quality
         viewport_height =512;

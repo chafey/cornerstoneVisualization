@@ -74,11 +74,11 @@ namespace image_data_service {
         const int maxSeconds = 30;
         
         const std::vector<render_history_item>& history = ss.history();
-        size_t index =  history.size() -1;
+        size_t index = history.size();
         std::map<int, int> summary;
-        while(index >= 0)
+        while(index > 0)
         {
-            const render_history_item& hi = history[index];
+            const render_history_item& hi = history[index - 1];
             boost::posix_time::time_duration timeAgo = now - hi.render_ptime;
             long totalSeconds = timeAgo.total_seconds();
             if(totalSeconds > maxSeconds)
