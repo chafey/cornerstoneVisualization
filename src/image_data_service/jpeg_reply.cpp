@@ -40,11 +40,13 @@ namespace image_data_service {
         // Return the reply
         reply.status = http::server::reply::ok;
         reply.content = std::string((char*)dataPtr->GetPointer(0), dataPtr->GetSize());
-        reply.headers.resize(2);
+        reply.headers.resize(3);
         reply.headers[0].name = "Content-Length";
         reply.headers[0].value = boost::lexical_cast<std::string>(reply.content.size());
         reply.headers[1].name = "Content-Type";
         reply.headers[1].value = http::server::mime_types::extension_to_type("jpg");
+        reply.headers[2].name = "Access-Control-Allow-Origin";
+        reply.headers[2].value = "*";
     }
         
 } // namespace image_data_service
