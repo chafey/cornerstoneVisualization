@@ -16,7 +16,7 @@ namespace image_data_service {
         image_slab_reslice = vtkImageSlabReslice::New();
         image_slab_reslice->SetInputData(imageData);
         image_slab_reslice->SetOutputDimensionality(2);
-        image_slab_reslice->SetBackgroundLevel(-1024);
+        image_slab_reslice->AutoCropOutputOn();
         
         // Create a greyscale lookup table
         lookup_table = vtkLookupTable::New();
@@ -40,9 +40,8 @@ namespace image_data_service {
         render_window = vtkRenderWindow::New();
         render_window->SetOffScreenRendering(1);
         render_window->AddRenderer(renderer);
-        render_window->SetSize(1024,1024);
+        render_window->SetSize(512,512);
         render_window->Render();
-
     }
     
     

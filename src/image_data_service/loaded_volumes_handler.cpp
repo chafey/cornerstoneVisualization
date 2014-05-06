@@ -49,7 +49,7 @@ namespace image_data_service {
         }
         pt.put_child(ptree::path_type("volumes"), arrayChild);
         
-        json_reply::write(rep, pt);
+        json_reply::write(rep, pt, true);
     }
 
     

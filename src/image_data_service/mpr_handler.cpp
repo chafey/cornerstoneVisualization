@@ -52,6 +52,7 @@ namespace image_data_service {
                                                      renderParams.axes_direction_cosines[6],
                                                      renderParams.axes_direction_cosines[7],
                                                      renderParams.axes_direction_cosines[8]);
+        renderer->image_slab_reslice->SetBackgroundLevel(renderParams.background_level);
 
         // ww/wc
         int min = renderParams.window_level - renderParams.window_width / 2;

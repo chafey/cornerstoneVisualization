@@ -47,7 +47,9 @@ namespace image_data_service {
             boost::lexical_cast<int>(parameters["viewport_width"]) : result.viewport_width;
         result.interpolation_mode = parameters.count("interpolation_mode") ?
             boost::lexical_cast<int>(parameters["interpolation_mode"]) : result.interpolation_mode;
-        
+        result.background_level = parameters.count("background_level") ?
+            boost::lexical_cast<double>(parameters["background_level"]) : result.background_level;
+
         result.image_type = parameters.count("image_type") ?
             boost::lexical_cast<int>(parameters["image_type"]) : result.image_type;
         result.jpeg_quality = parameters.count("jpeg_quality") ?

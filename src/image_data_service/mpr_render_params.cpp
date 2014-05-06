@@ -5,6 +5,7 @@
 // include vtk headers
 // include boost headers
 // include stdlib headers
+#include <limits.h>
 
 namespace image_data_service {
     
@@ -26,6 +27,7 @@ namespace image_data_service {
         viewport_height =512;
         viewport_width = 512;
         interpolation_mode = 1; // linear
+        background_level = -1000; // Air in CT
         
         image_type = 0; // png
         jpeg_quality = 30; // low image quality

@@ -20,11 +20,13 @@ namespace image_data_service {
     {
         reply.status = http::server::reply::ok;
         reply.content = jsonString;
-        reply.headers.resize(2);
+        reply.headers.resize(3);
         reply.headers[0].name = "Content-Length";
         reply.headers[0].value = boost::lexical_cast<std::string>(reply.content.size());
         reply.headers[1].name = "Content-Type";
         reply.headers[1].value = "text/html";
+        reply.headers[2].name = "Access-Control-Allow-Origin";
+        reply.headers[2].value = "*";
     }
 
     void json_reply::write(http::server::reply& reply, const boost::property_tree::ptree& propertyTree, bool fix_json_types)

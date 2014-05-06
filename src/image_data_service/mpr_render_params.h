@@ -39,6 +39,7 @@ namespace image_data_service {
         int viewport_width;
         int viewport_height;
         int interpolation_mode; // 0 = nearest, 1 = linear, 2 = cubic
+        double background_level; // the gray value to use for the background/border pixels
         
         // Resulting image properties
         int image_type; // 0=png, 1=jpeg, 2=16 bit

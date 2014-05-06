@@ -53,14 +53,7 @@ namespace image_data_service {
         
         ptree pt = volume_to_property_tree::from(vol);
         
-        // convert to json string
-        std::ostringstream buf;
-        write_json (buf, pt, false);
-        std::string json = buf.str();
-        
-        json = json_property_tree::fix_json_types(json);
-        
-        json_reply::write(rep, json);
+        json_reply::write(rep, pt, true);
     }
         
 } // namespace image_data_service
