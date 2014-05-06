@@ -36,6 +36,9 @@
             <span>Slab Thickness</span>
             <input id="slabThickness" type="text" placeholder="e.g. 100" value="10" size="3">
             <button id="apply" class="btn">Apply</button>
+            <span>PNG Compression</span>
+            <input id="pngCompression" type="text" placeholder="e.g. 100" value="5" size="3">
+            <button id="applyPNGCompression" class="btn">Apply</button>
 
         </div>
         <div class="col-xs-6">
@@ -52,9 +55,15 @@ var slabThickness = 10;
 var axes_direction_cosines = [1,0,0, 0,1,0, 0,0,1];
 var reslice_axes_origin = [0,0,0];
 var orientation = 0; // axial
+var png_compression = 5;
 
 $('#apply').click(function() {
     slabThickness = parseInt($('#slabThickness').val());
+    loadAndDisplayImage();
+});
+$('#applyPNGCompression').click(function() {
+    png_compression = parseInt($('#pngCompression').val());
+    loadAndDisplayImage();
 });
 
 function activate(id)
@@ -170,7 +179,7 @@ function getUrl()
         url += "&viewport_height=512&viewport_width=512&image_type=1&interpolation_type=0";
     }
     else {
-        url += "&viewport_height=512&viewport_width=512&image_type=0&interpolation_type=1";
+        url += "&viewport_height=512&viewport_width=512&image_type=0&interpolation_type=1&png_compression_level="+png_compression;
     }
 
     return url;

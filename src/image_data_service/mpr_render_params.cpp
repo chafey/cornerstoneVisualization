@@ -27,9 +27,9 @@ namespace image_data_service {
         viewport_width = 512;
         interpolation_mode = 1; // linear
         
-        image_type = 1; // jpeg
+        image_type = 0; // png
         jpeg_quality = 30; // low image quality
-        png_compression_level = 5; // medium compression level
+        png_compression_level = 1; // low compression level
         jpeg_progressive = 0; // not progressive
     }
     
