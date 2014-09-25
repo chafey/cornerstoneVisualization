@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 // server.cpp
 // ~~~~~~~~~~
@@ -9,8 +10,6 @@
 //
 
 #include "server.hpp"
-#include <boost/bind.hpp>
-#include <signal.h>
 
 namespace http {
     namespace server {

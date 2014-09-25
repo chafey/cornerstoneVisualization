@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 // connection_manager.cpp
 // ~~~~~~~~~~~~~~~~~~~~~~
@@ -9,8 +10,6 @@
 //
 
 #include "connection_manager.hpp"
-#include <algorithm>
-#include <boost/bind.hpp>
 
 namespace http {
     namespace server {

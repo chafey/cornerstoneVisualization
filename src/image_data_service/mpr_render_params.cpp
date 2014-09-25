@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "mpr_render_params.h"
 // include headers from this project
 #include "string_helper.h"

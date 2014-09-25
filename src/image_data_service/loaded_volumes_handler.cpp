@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "loaded_volumes_handler.h"
 // include headers from this project
 #include "volume_manager.h"

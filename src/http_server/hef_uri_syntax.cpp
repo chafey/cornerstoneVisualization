@@ -1,8 +1,6 @@
+#include "stdafx.h"
 
 #include "hef_uri_syntax.hpp"
-#include <stdio.h>
-#include <cstdlib>
-#include <cstring>
 
 /*
 	Code of this file is based on Poco library, file: URI.cpp.

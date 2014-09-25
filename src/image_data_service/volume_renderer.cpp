@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "volume_renderer.h"
 // include headers from this project
 #include "log.h"

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 // request_handler.cpp
 // ~~~~~~~~~~~~~~~~~~~
@@ -9,10 +10,6 @@
 //
 
 #include "file_request_handler.hpp"
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <boost/lexical_cast.hpp>
 #include "mime_types.hpp"
 #include "reply.hpp"
 #include "request.hpp"

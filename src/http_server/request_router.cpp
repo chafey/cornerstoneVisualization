@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 // request_router.cpp
 // ~~~~~~~~~~~~~~~~~~~
@@ -9,13 +10,6 @@
 //
 
 #include "request_router.hpp"
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/lexical_cast.hpp>
-#include <iostream>
-
 #include "mime_types.hpp"
 #include "reply.hpp"
 #include "request.hpp"

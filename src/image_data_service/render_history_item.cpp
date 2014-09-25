@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "render_history_item.h"
 // include headers from this project
 // include headers from other projects

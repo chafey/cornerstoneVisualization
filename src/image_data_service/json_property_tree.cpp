@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "json_property_tree.h"
 // include headers from this project
 // include headers from other projects

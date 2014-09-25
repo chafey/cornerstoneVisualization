@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 //  volume_loader.cpp
 //  cornerstoneVisualizationService

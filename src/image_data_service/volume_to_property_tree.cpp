@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "volume_to_property_tree.h"
 // include headers from this project
 #include "volume.h"

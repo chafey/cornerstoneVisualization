@@ -1,18 +1,10 @@
+#include "stdafx.h"
 #include "json_reply.h"
 // include headers from this project
 #include "json_property_tree.h"
 
 // include headers from other projects
 #include "../http_server/reply.hpp"
-
-// include vtk headers
-// include boost headers
-#include <boost/lexical_cast.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-// include stdlib headers
-
-
 
 namespace image_data_service {
     

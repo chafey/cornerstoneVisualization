@@ -1,14 +1,9 @@
+#include "stdafx.h"
 #include "image_reply.h"
 // include headers from this project
 #include "png_reply.h"
 #include "jpeg_reply.h"
 // include headers from other projects
-// include vtk headers
-#include <vtkSmartPointer.h>
-#include <vtkRenderWindow.h>
-#include <vtkWindowToImageFilter.h>
-// include boost headers
-// include stdlib headers
 
 namespace image_data_service {
     

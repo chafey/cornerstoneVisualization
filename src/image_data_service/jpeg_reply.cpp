@@ -5,6 +5,7 @@
 //  Created by Chris Hafey on 4/25/14.
 //
 //
+#include "stdafx.h"
 
 #include "jpeg_reply.h"
 

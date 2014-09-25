@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 //  render_window_manager.cpp
 //  cornerstoneVisualizationService

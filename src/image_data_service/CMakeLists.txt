@@ -45,4 +45,12 @@ else()
 TARGET_LINK_LIBRARIES(image_data_service vtkHybrid ${Boost_LIBRARIES} http_server)
 endif()
 
+# create a new list of the sources that use precompiled headers
+set(IMAGE_DATA_SERVICE_SOURCES_USING_PCH ${IMAGE_DATA_SERVICE_SOURCES})
+list(REMOVE_ITEM IMAGE_DATA_SERVICE_SOURCES_USING_PCH ${CMAKE_CURRENT_SOURCE_DIR}/stdafx.cpp)
 
+# Setup precompiled headers for Microsoft Visual Studio
+if (${MSVC})
+  ADD_VISUAL_STUDIO_PRECOMPILED_HEADERS(
+    "stdafx.h" "stdafx.cpp" IMAGE_DATA_SERVICE_SOURCES_USING_PCH)
+endif()

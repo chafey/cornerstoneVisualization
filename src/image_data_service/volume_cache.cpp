@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 //  volume_cache.cpp
 //  cornerstoneVisualizationService

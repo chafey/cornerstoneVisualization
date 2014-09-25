@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "volume_render_params_parser.h"
 // include headers from this project
 

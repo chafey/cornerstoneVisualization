@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 // query_parser.cpp
 // ~~~~~~~~~~~~~~

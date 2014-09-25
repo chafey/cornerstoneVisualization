@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 //  status_request_handler.cpp
 //  cornerstoneVisualizationService

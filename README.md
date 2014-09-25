@@ -14,18 +14,33 @@ The best way to see the power of this library is to actually see it in use.
 
 http://lurydemo.hopto.org:8080/web/
 
-Building on Windows 7x64 with Visual Studio 2010 SP1
+Building on Windows 7x64 with Visual Studio 2013
 -------------------------------------------------
 
 Install the following dependencies:
 
-* [CMake](http://cmake.org/) Download the MSI installer (I used 2.8.12.2)
-* [boost](http://www.boost.org/) Download the precompiled binaries from [here](http://boost.teeks99.com/bin/1.55.0/boost_1_55_0-msvc-10.0-64.exe) and install to the default directory (C:/local/boost_1_55_0).  You can of course do a custom boost build if you know how to do that.
-* [vtk](http://www.vtk.org/) Download the source and follow the directions to build both the debug and release builds (I used 6.1.0 with the source in C:\src\VTK-6.1.0 and the build directory C:\src\VTK-bin)
-* [node.js] (http://www.nodejs.org) Download and run the installer (I used 0.10.28)
+* [CMake](http://cmake.org/) 
+  * Download the MSI installer (I used 2.8.12.2)
+* [boost](http://www.boost.org/) 
+  * Download the boost distribution from [here](http://sourceforge.net/projects/boost/files/boost/1.56.0/boost_1_56_0.zip/download) and unzip to C:/local/boost_1_56_0
+  * Download the precompiled binaries from [here](http://boost.teeks99.com/bin/1.56.0/boost_1_56_0-msvc-12.0-64.exe) and install to the default directory (C:/local/boost_1_56_0).  
+* [vtk](http://www.vtk.org/) 
+  * Download the source from [here](http://www.vtk.org/VTK/resources/software.html)
+  * Generate the project using cmake for the Visual Studio 2013 x64 configuration 
+  * Open the generated solution using visual studio 2013
+  * Fix the bug reported [here](http://www.paraview.org/Bug/view.php?id=14971)
+  * Build both the debug and release builds (I used 6.1.0 with the source in C:\src\VTK-6.1.0 and the build directory C:\src\VTK-bin)
+* [node.js] 
+  * Download and run the installer from [here](http://www.nodejs.org) (I used 0.10.28)
 
 Add the VTK and boost DLL's to your path:
-C:\local\boost_1_55_0\lib64-msvc-10.0;C:\src\VTK-bin\bin\Release
+C:\local\boost_1_56_0\lib64-msvc-12.0;C:\src\VTK-bin\bin\Release
+
+Add the following environment variables to help CMake find boost:
+* Boost_DIR = C:\local\boost_1_56_0
+* Boost_INCLUDE_DIR = C:\local\boost_1_56_0
+* BOOST_LIBRARYDIR = C:\local\boost_1_56_0\lib64-msvc-12.0
+* BOOST_ROOT = C:\local\boost_1_56_0
 
 Open a NODE.JS window and install the following node.js based dependencies for the web component
 
@@ -46,9 +61,13 @@ Create a build directory and run cmake to generate an Visual Studio 2010 project
 
 > cd build
 
-> cmake -G "Visual Studio 10 Win64" ..
+> cmake -G "Visual Studio 12 Win64" ..
 
 Open the CMake generated Visual Studio project from build/cornerstoneVisualizationService.sln and build image_data_service
+
+Create the data directory
+
+> mkdir c:\ProgramData/Cornerstone/VisualizationService
 
 Building on Mac OS X Mavericks with XCode 5
 -------------------------------------------

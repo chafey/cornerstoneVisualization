@@ -1,3 +1,4 @@
+#include "stdafx.h"
 /*
  * Author:  David Robert Nadeau
  * Site:    http://NadeauSoftware.com/

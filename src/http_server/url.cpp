@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 // url.cpp
 // ~~~~~~~~~~~~~~~~~~~
@@ -9,8 +10,6 @@
 //
 
 #include "url.hpp"
-#include <sstream>
-#include <string>
 
 namespace http {
     namespace server {

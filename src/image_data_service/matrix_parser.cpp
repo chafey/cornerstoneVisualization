@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "matrix_parser.h"
 // include headers from this project
 // include headers from other projects

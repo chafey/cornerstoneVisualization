@@ -4,6 +4,7 @@
  * License: Creative Commons Attribution 3.0 Unported License
  *          http://creativecommons.org/licenses/by/3.0/deed.en_US
  */
+#include "stdafx.h"
 #if defined(_WIN32)
 #include <Windows.h>
 

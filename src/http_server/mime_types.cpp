@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 // mime_types.cpp
 // ~~~~~~~~~~~~~~

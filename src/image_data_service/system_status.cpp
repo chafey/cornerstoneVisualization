@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "system_status.h"
 // include headers from this project
 // include headers from other projects

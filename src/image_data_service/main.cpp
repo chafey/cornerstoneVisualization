@@ -1,4 +1,4 @@
-#include <boost/asio.hpp>
+#include "stdafx.h"
 
 #include "status_request_handler.h"
 #include "volume_loader_handler.h"
@@ -12,15 +12,6 @@
 
 #include "../http_server/server.hpp"
 #include "../http_server/file_request_handler.hpp"
-
-
-#include <boost/bind.hpp>
-#include <boost/predef.h>
-#include <boost/filesystem.hpp>
-
-
-#include <iostream>
-#include <string>
 
 //#include "system_status.h"
 
@@ -88,7 +79,7 @@ static std::string get_data_directory(std::string directory_name)
 static std::string get_document_directory()
 {
 #if BOOST_OS_WINDOWS == 1
-	return "C:/src/GitHub/cornerstoneVisualization/src/image_data_service";
+	return "C:/src/git/cornerstoneVisualization/src/image_data_service";
 #else
 	return "/Users/chafey/src/cornerstoneVisualization/src/image_data_service";
 #endif

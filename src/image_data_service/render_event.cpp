@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "render_event.h"
 
 // include headers from this project
