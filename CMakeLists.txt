@@ -4,6 +4,8 @@ project(CornerstoneVisualizationServer)
 # disable static build
 set(STATIC_BUILD OFF)
 
+
+
 # Advanced parameters to fine-tune linking against system libraries
 SET(USE_SYSTEM_BOOST ON CACHE BOOL "Use the system version of Boost")
 

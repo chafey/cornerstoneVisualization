@@ -34,7 +34,13 @@ namespace image_data_service {
     : volume_root_("VolumeCache")
     {
     }
-    
+
+    void volume_manager::put(const std::string& volumeId, volume* vol)
+    {
+      volumes_[volumeId] = vol;
+      volumes_[volumeId]->volumeId = volumeId;
+    }
+
     volume& volume_manager::get(const std::string& volumeId)
     {
         LOG_VERBOSE(1) << "volume_manager::get(" << volumeId << ")";

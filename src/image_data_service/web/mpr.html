@@ -34,7 +34,7 @@
 
 
             <span>Slab Thickness</span>
-            <input id="slabThickness" type="text" placeholder="e.g. 100" value="10" size="3">
+            <input id="slabThickness" type="text" placeholder="e.g. 100" value="1" size="3">
             <button id="apply" class="btn">Apply</button>
             <span>PNG Compression</span>
             <input id="pngCompression" type="text" placeholder="e.g. 100" value="5" size="3">
@@ -42,7 +42,7 @@
 
         </div>
         <div class="col-xs-6">
-            <img id="vr" width="512" height="512" src="/mpr?volumeId=Volume4" draggable="false" oncontextmenu="return false;"/>
+            <img id="vr" width="512" height="512" src="/mpr?volumeId=zzz" draggable="false" oncontextmenu="return false;"/>
         </div>
 
     </div>
@@ -51,7 +51,7 @@
 <script>
 
 
-var slabThickness = 10;
+var slabThickness = 1;
 var axes_direction_cosines = [1,0,0, 0,1,0, 0,0,1];
 var reslice_axes_origin = [0,0,0];
 var orientation = 0; // axial
@@ -129,7 +129,7 @@ $('#oblique').click(function() {
 
 
 
-var volumeId = 'Volume4';
+var volumeId = 'zzz';
 
 matrix = new THREE.Matrix4();
 rotationMatrix = new THREE.Matrix4();

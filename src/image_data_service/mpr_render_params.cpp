@@ -22,7 +22,7 @@ namespace image_data_service {
         blend_mode = 2; // mean
         window_width = 400;
         window_level = 40;
-        slab_thickness = 10.0;
+        slab_thickness = 1.0;
         slab_resolution = 1.0;
         
         viewport_height =512;

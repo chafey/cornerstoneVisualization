@@ -16,6 +16,7 @@
 #include <vtkDICOMImageReader.h>
 #include <boost/timer/timer.hpp>
 
+
 namespace image_data_service {
     
     vtkSmartPointer<vtkImageData> volume_loader::load_volume_from_dicom(const std::string& path)
@@ -42,7 +43,7 @@ namespace image_data_service {
 
         
         return imageData;
-    }
+    } 
 
     
 } // namespace image_data_service

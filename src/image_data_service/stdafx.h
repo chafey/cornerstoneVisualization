@@ -22,7 +22,10 @@
 #include <boost/predef.h>
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
 
+// cpp-netlib
+#include <boost/network/protocol/http/client.hpp>
 
 #include <vtkSmartPointer.h>
 #include <vtkImageSlabReslice.h>

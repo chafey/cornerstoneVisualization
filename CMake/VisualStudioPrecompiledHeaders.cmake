@@ -11,7 +11,7 @@ macro(ADD_VISUAL_STUDIO_PRECOMPILED_HEADERS PrecompiledHeaders PrecompiledSource
     OBJECT_DEPENDS "${PrecompiledBinary}")
 
   # Add /Zm256 compiler option to Visual Studio to fix PCH errors
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm256")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm512")
 	
   list(APPEND ${Sources} ${PrecompiledSource})
 endmacro()

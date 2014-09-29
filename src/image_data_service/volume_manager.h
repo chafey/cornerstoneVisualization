@@ -38,6 +38,10 @@ namespace image_data_service {
         // returns the volume for the specified volumeId
         volume& get(const std::string& volumeId);
         
+        // returns the volume for the specified volumeId
+        void put(const std::string& volumeId, volume* volume);
+
+
         // returns a list of loaded volumes
         std::vector<volume*> loaded_volumes();
         

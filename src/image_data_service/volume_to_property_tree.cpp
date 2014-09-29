@@ -32,7 +32,7 @@ namespace image_data_service {
         put(pt, "spacing.z", spacing[2]);
 
         put(pt, "size.x", spacing[0] * dims[0]);
-        put(pt, "size.x", spacing[1] * dims[1]);
+        put(pt, "size.y", spacing[1] * dims[1]);
         put(pt, "size.z", spacing[2] * dims[2]);
 
         put(pt, "dataType", vol.image_data()->GetScalarType());

@@ -288,7 +288,7 @@ namespace http {
                         return false;
                     }
                 case expecting_newline_3:
-                    return (input == '\n');
+                  return (input == '\n');
                 default:
                     return false;
             }

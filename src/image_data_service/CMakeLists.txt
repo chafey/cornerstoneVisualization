@@ -54,3 +54,10 @@ if (${MSVC})
   ADD_VISUAL_STUDIO_PRECOMPILED_HEADERS(
     "stdafx.h" "stdafx.cpp" IMAGE_DATA_SERVICE_SOURCES_USING_PCH)
 endif()
+
+set ( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ../../../cpp-netlib/build )
+find_package ( cppnetlib 0.11.0 REQUIRED )
+include_directories ( ${CPPNETLIB_INCLUDE_DIRS} )
+target_link_libraries ( image_data_service ${CPPNETLIB_LIBRARIES} )
+LINK_DIRECTORIES("C:/local/boost_1_56_0/lib64-msvc-12.0")
+target_link_libraries(image_data_service ${Boost_LIBRARIES})                                                                                                                                                                                                                            

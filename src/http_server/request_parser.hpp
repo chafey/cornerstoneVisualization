@@ -41,7 +41,10 @@ namespace http {
                 {
                     boost::tribool result = consume(req, *begin++);
                     if (result || !result)
-                        return boost::make_tuple(result, begin);
+                    {
+                      req.body = std::string(begin, end-begin);
+                      return boost::make_tuple(result, begin);
+                    }
                 }
                 boost::tribool result = boost::indeterminate;
                 return boost::make_tuple(result, begin);
