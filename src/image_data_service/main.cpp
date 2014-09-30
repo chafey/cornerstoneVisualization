@@ -49,7 +49,7 @@ void start(const char* address, const char* port, const char* dicomVolumeRoot, c
     http::server::request_router::register_handler("/loadedVolumes", &lvh);
 
     
-    image_data_service::volume_manager::instance().get("volume3");
+    //image_data_service::volume_manager::instance().get("volume3");
     //image_data_service::volume_manager::instance().get("volume1");
     
     // create the http server and run it until stopped

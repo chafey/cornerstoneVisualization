@@ -18,6 +18,7 @@
 #include <vtkLookupTable.h>
 #include <vtkImageMapToColors.h>
 #include <vtkImageActor.h>
+#include <vtkImageShiftScale.h>
 // headers from boost
 #include <boost/noncopyable.hpp>
 // headers from stdlib
@@ -42,6 +43,8 @@ namespace image_data_service {
         
         vtkSmartPointer<vtkImageMapToColors> image_map_to_colors;
         
+        vtkSmartPointer<vtkImageShiftScale> image_shift_scale;
+
         vtkSmartPointer<vtkImageActor> image_actor;
     };
     

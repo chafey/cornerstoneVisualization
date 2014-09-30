@@ -33,6 +33,7 @@ namespace image_data_service {
         }
         
         json_reply::write(reply, json);
+
     }
 
     

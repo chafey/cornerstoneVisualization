@@ -56,9 +56,12 @@ namespace image_data_service {
         renderer->image_slab_reslice->SetBackgroundLevel(renderParams.background_level);
 
         // ww/wc
-        int min = renderParams.window_level - renderParams.window_width / 2;
-        int max = min + renderParams.window_width;
-        renderer->lookup_table->SetRange(min, max); // image intensity range
+        //int min = renderParams.window_level - renderParams.window_width / 2;
+        //int max = min + renderParams.window_width;
+        //renderer->lookup_table->SetRange(min, max); // image intensity range
+        //renderer->image_map_to_colors->SetLevel(renderParamers.window_level);
+        renderer->image_shift_scale->SetShift(0.5*renderParams.window_width - renderParams.window_level);
+        renderer->image_shift_scale->SetScale(255.0 / renderParams.window_width);
 
         // render the image
         renderer->render_window->SetSize(renderParams.viewport_width, renderParams.viewport_height);

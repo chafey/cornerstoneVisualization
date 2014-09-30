@@ -288,6 +288,7 @@ namespace http {
                         return false;
                     }
                 case expecting_newline_3:
+                  state_ = optional_body;
                   return (input == '\n');
                 default:
                     return false;

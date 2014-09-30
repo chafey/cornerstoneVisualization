@@ -39,12 +39,40 @@ namespace http {
             {
                 while (begin != end)
                 {
-                    boost::tribool result = consume(req, *begin++);
-                    if (result || !result)
+                  if (state_ == optional_body && req.content_length > req.body.size())
+                  {
+                    req.body += std::string(begin, end - begin);
+                    if (req.body.size() >= req.content_length) {
+                      return boost::make_tuple(true, begin);
+                    }
+                    else
                     {
-                      req.body = std::string(begin, end-begin);
+                      boost::tribool result = boost::indeterminate;
                       return boost::make_tuple(result, begin);
                     }
+                  }
+
+                  boost::tribool result = consume(req, *begin++);
+                  if (result || !result)
+                  {
+                    if (result) {
+                      for (int i = 0; i < req.headers.size(); i++) {
+                        if (req.headers[i].name == "Content-Length") {
+                          req.content_length = atoi(req.headers[i].value.c_str());
+                          if (req.content_length > 0) {
+                            req.body = std::string(begin, end - begin);
+                            if (req.body.size() == req.content_length) {
+                              return boost::make_tuple(true, begin);
+                            }
+                            boost::tribool result = boost::indeterminate;
+                            return boost::make_tuple(result, begin);
+                          }
+                        }
+                      }
+                    }
+                    req.body = std::string(begin, end-begin);
+                    return boost::make_tuple(result, begin);
+                  }
                 }
                 boost::tribool result = boost::indeterminate;
                 return boost::make_tuple(result, begin);
@@ -89,7 +117,8 @@ namespace http {
                 space_before_header_value,
                 header_value,
                 expecting_newline_2,
-                expecting_newline_3
+                expecting_newline_3,
+                optional_body
             } state_;
         };
         
