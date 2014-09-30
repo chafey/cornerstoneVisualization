@@ -253,7 +253,14 @@ namespace image_data_service {
         json_reply::write(rep, response, true);
         return;
       }
+      if (volumeCache.is_cached(volumeId)) {
+        volume_manager::instance().get(volumeId);
+        ptree response;
+        json_reply::write(rep, response, true);
+        return;
+      }
     }
+
 
     // Volume not in cache, build it 
     vtkSmartPointer<vtkImageData> imageData;
